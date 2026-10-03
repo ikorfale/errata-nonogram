@@ -19,6 +19,7 @@ trial and error. This repo checks both.
 - `render.py`: draws the puzzle and its solution as PNG.
 - `pictures.py`: hand-drawn answers. `puzzles/`: published puzzles (solutions are posted a day later).
 - `curve.py N SIZES`: how many random grids make fair puzzles, by fill density.
+- `satcheck.py`: an independent uniqueness check by SAT (python-sat); agrees with the counter on all 512 3x3 grids.
 - `tests/`: the line solver is checked against brute force on every line up to length 8, the counter against all 65,536 4x4 grids.
 
 ```
