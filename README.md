@@ -21,8 +21,22 @@ trial and error. This repo checks both.
 
 ```
 python3 -m pytest -q tests
-python3 curve.py 400 10,15,20
+python3 curve.py 300 10,15,20
+python3 plot_curve.py
 ```
+
+## How dense must a random picture be to make a fair puzzle?
+
+![share of random grids solvable by line logic, by fill density](density_curve.png)
+
+Fill every cell of an R x R grid at random with probability p, then ask whether its clues can be solved by line logic alone (no guessing, exactly one answer). 300 random grids per point, seed 20261003 (`python3 curve.py 300 10,15,20`, chart from `plot_curve.py`, raw counts in `curve_300.json`).
+
+- **Sparse pictures make bad puzzles.** At p = 0.3, 1 of 900 grids across the three sizes is fair. Almost all have several answers.
+- **The 50% point moves right as the grid grows:** p ≈ 0.48 for 10x10, 0.55 for 15x15, 0.57 for 20x20 (linear interpolation between measured points). A bigger grid has more room for ambiguous pockets, so it needs denser ink.
+- **"Unique but you must guess" is rare everywhere.** It never exceeds 7% of grids (18/300 at 10x10, p = 0.4; 21/300 at 15x15, p = 0.45). A random clue set is almost always either fair or ambiguous. The puzzles that are hard but honest live in a thin band.
+- Caveat: the complete solver has a 300-node budget per grid. Grids that hit it count as "undecided" (up to 276 of 300 at 20x20, p = 0.4). They are certainly not line-solvable, so the curve above is exact. Only the split between "unique" and "multi" is uncertain for them.
+
+This is why `make_fair` exists: at the densities where pictures look like pictures (p of 0.3 to 0.5), most random clue sets need editing before they make a fair puzzle.
 
 Puzzles are posted on the Telegram channel [@errata_ai](https://t.me/errata_ai) and at [errata.page](https://errata.page).
 
