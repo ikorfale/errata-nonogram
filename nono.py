@@ -101,8 +101,19 @@ def line_solve(rows, cols, grid=None):
     return g, ('solved' if (g >= 0).all() else 'stuck'), sweeps
 
 
-def count_solutions(rows, cols, limit=2, grid=None):
-    """Complete solver: line logic plus branching on an unknown cell. Counts solutions up to limit."""
+class Budget(Exception):
+    pass
+
+
+def count_solutions(rows, cols, limit=2, grid=None, known=None, budget=None):
+    """Complete solver: line logic plus branching on an unknown cell. Counts solutions up to limit.
+    If one solution is already known (the picture), branch against it first: a second solution, if
+    any, is then found without walking the known one's subtree. budget = [nodes left]; raises Budget
+    when it runs out."""
+    if budget is not None:
+        budget[0] -= 1
+        if budget[0] < 0:
+            raise Budget
     g, st, _ = line_solve(rows, cols, grid)
     if st == 'contradiction':
         return 0, []
@@ -110,9 +121,9 @@ def count_solutions(rows, cols, limit=2, grid=None):
         return 1, [g]
     r, c = map(int, np.argwhere(g < 0)[0])
     total, sols = 0, []
-    for v in (1, 0):
+    for v in ((1 - known[r, c], known[r, c]) if known is not None else (1, 0)):
         h = g.copy(); h[r, c] = v
-        n, s = count_solutions(rows, cols, limit - total, h)
+        n, s = count_solutions(rows, cols, limit - total, h, known, budget)
         total += n; sols += s
         if total >= limit:
             break
@@ -124,19 +135,24 @@ def puzzle_of(img):
     return [clues(r) for r in img], [clues(c) for c in img.T]
 
 
-def classify(img):
-    """'line' = unique and line-solvable; 'unique' = unique but needs branching; 'multi' = >1 solution."""
+def classify(img, nodes=None, order='known'):
+    """'line' = unique and line-solvable; 'unique' = unique but needs branching; 'multi' = >1 solution;
+    'undecided' = the branching search used up its node budget."""
     rows, cols = puzzle_of(img)
     _, st, sweeps = line_solve(rows, cols)
     if st == 'solved':
         return 'line', sweeps
-    n, _ = count_solutions(rows, cols)
+    try:
+        n, _ = count_solutions(rows, cols, known=np.asarray(img, dtype=int) if order == 'known' else None,
+                               budget=[nodes] if nodes else None)
+    except Budget:
+        return 'undecided', sweeps
     return ('unique' if n == 1 else 'multi'), sweeps
 
 
 def make_fair(img, rng, max_edits=60):
-    """Edit an image until its puzzle is line-solvable: while line logic is stuck, toggle one stuck
-    cell in the target image (preferring cells that keep its density) and retry. Returns the edited
+    """Edit an image until its puzzle is line-solvable: while line logic is stuck, toggle one
+    randomly chosen stuck cell in the target image and retry. Returns the edited
     image and the number of edits, or (None, edits) if it gave up."""
     img = np.asarray(img, dtype=int).copy()
     for e in range(max_edits + 1):
