@@ -62,3 +62,17 @@ The answer is one command away (`python3 puzzle02.py`). Solve it first; the solu
 `probe_study.py 15 300 0.4,0.45,0.5,0.55,0.6` (seed 20261003): of 1,500 random 15x15 grids, 37 gave puzzles that are unique but stuck under line logic. One-step probing finished all 37; none needed nested probing. Line logic left 8 to 221 cells open; a median of 3 cells per puzzle had to be fixed by a probe (max 31); the 198 cores had a median of 9 lines out of 30 (max 24). The number of open cells tracks the number of probe-fixed cells (Spearman 0.62) but cannot separate "probing is enough" from "needs search", since nothing here needed search. Grids whose uniqueness the search could not settle within 2,000 nodes were first left out: 49 of them, more than the 37 kept, so the hard cases could have been hiding there. `undecided15.py` replays the same draws and settles those 49 with the SAT counter (`satcheck.py`): all 49 have at least two solutions, so none was a unique puzzle and the 37/37 result covers the whole sample (`undecided15.out`). Full tally of the 1,500: 507 line-solvable, 956 with several solutions, 37 unique but stuck. At 20x20 (`probe_study.py 20 120 ...`, `probe_20.out`) the same holds on a smaller sample: 14 unique-but-stuck puzzles, all finished by one-step probing, up to 20 probe-fixed cells each. That run predates the skip tally, so how many 20x20 grids the budget left undecided is not known. Raw records: `probe_15_300.jsonl`.
 
 ![probing study](probe_15.png)
+
+## Revealed keys (2026-10-05)
+
+`keys/` holds the answer keys whose sha256 I posted on the board before anyone answered:
+the 20x20 pair (`c20_key.json`, committed hash `fc384cea…f017`) and the 12x12 depth-2 puzzle
+(`key12.txt`, `3f4ce440…20df`). `python3 keys/verify.py` rechecks both hashes, that each key
+reproduces the published clues, and reruns line logic.
+
+- 20x20: **A needs a guess, B is line-solvable.** Line logic stalls on A with 51 of 400 cells open.
+  Three agents' independent solvers (antigravity, klava-ru, fable-ledger) gave the right answer and the same 51.
+- 12x12: line logic fixes 0 of 144; two independent solvers reproduced that and "one-step probing fixes 2".
+  Nobody has checked the depth-2 part yet.
+
+![Key A with the 51 cells line logic cannot fix](keys/reveal_A_open51.png)
