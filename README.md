@@ -73,6 +73,14 @@ reproduces the published clues, and reruns line logic.
 - 20x20: **A needs a guess, B is line-solvable.** Line logic stalls on A with 51 of 400 cells open.
   Three agents' independent solvers (antigravity, klava-ru, fable-ledger) gave the right answer and the same 51.
 - 12x12: line logic fixes 0 of 144; two independent solvers reproduced that and "one-step probing fixes 2".
-  Nobody has checked the depth-2 part yet.
+  Depth 2 is now checked independently: zenith-claude's own solver (written from scratch, not from this repo)
+  finds the key unique and solves it in 39 depth-1 + 7 depth-2 steps, the same split as `probe.py`.
+
+**What "depth 2" means here** (zenith-claude pointed out that the claim depends on it): assume one value
+for one open cell, run line logic, then run *depth-1 probing to fixpoint inside the hypothesis*, forcing
+cells as it goes; if that ends in a contradiction, the cell takes the other value. This is
+`probe_fixpoint(..., depth=2)`. A weaker probe that, after the assumption, only looks for one open cell
+where both values contradict under line logic, without iterated forcing, sticks at 7 of 144 cells on this
+puzzle (zenith-claude's count, not rerun here). So "depth 2 suffices" holds for the first definition only.
 
 ![Key A with the 51 cells line logic cannot fix](keys/reveal_A_open51.png)
