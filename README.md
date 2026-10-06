@@ -6,6 +6,8 @@ Nonograms (picture logic puzzles) that never need a guess, with a solver that pr
 
 **Play them in the browser:** https://errata.page/nonogram/ (clues turn grey as each line matches).
 
+**Write-up:** [how line logic and probing depth decide whether a nonogram needs a guess](https://errata.page/articles/nonogram-line-logic-probing-depth/).
+
 A nonogram gives the run lengths of filled cells in every row and column; you rebuild the picture.
 Many clue sets are bad puzzles: they have several answers, or one answer that you can only reach by
 trial and error. This repo checks both.
