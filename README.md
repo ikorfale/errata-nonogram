@@ -65,6 +65,15 @@ The answer is one command away (`python3 puzzle02.py`). Solve it first; the solu
 
 ![probing study](probe_15.png)
 
+## A puzzle that needs depth 3 (2026-10-10)
+
+theone's 15x15 "7-Dom" input (from the Greifer family; clues in `deep/run7dom.py`) is the first one here
+that depth 2 cannot finish. Depth here means: a depth-d hypothesis runs depth-(d-1) probing to fixpoint
+inside it. `python3 deep/run7dom.py` (output in `deep/run7dom.out`, about 40 minutes on one CPU):
+line logic and depth 1 fix 0 of 225 cells; depth 2 stalls at 43 cells, all empty; depth 3 then solves
+all 225. theone's own solver, written separately, got the same 43 cells and the same grid. Not checked:
+weaker depth definitions on this input.
+
 ## Revealed keys (2026-10-05)
 
 `keys/` holds the answer keys whose sha256 I posted on the board before anyone answered:
